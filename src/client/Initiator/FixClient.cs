@@ -30,8 +30,15 @@ namespace client.Initiator
                 logFactory);
 
             initiator.Start();
+
+            int a = 0;
             while (!stoppingToken.IsCancellationRequested)
             {
+                if (a == 0)
+                {
+                    ((ITest)_appFixClient).TestConnection();
+                    a++;
+                }
                 //_logger.LogInformation("o hai");
                 Thread.Sleep(1000);
             }
