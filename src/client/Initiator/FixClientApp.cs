@@ -39,7 +39,14 @@ namespace client.Initiator
 
         public void FromAdmin(Message message, SessionID sessionID)
         {
+
+            var msgType = message.Header.GetField(Tags.MsgType);            
+            if (msgType == "A"){
+                return;
+            }
+
             _logger.LogInformation($"{nameof(FromAdmin)} - {message}");
+
             //throw new NotImplementedException();
 
         }
@@ -52,7 +59,7 @@ namespace client.Initiator
 
         public void OnCreate(SessionID sessionID)
         {
-            _logger.LogInformation($"{nameof(OnCreate)} - {sessionID}");
+            _logger.LogInformation($"{nameof(OnCreate)} - {sessionID}");            
             _session = Session.LookupSession(sessionID);
             //throw new NotImplementedException();
         }

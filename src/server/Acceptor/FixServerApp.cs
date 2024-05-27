@@ -24,7 +24,6 @@ namespace server.Acceptor
             _logger.LogInformation($"{nameof(FromApp)} - {message}");
             //throw new NotImplementedException();
 
-            var session = Session.LookupSession(sessionID);
             var msgEr = new Message();
             msgEr.Header.SetField(new MsgType("8"));
             msgEr.Header.SetField(new ExecType('0')); // new
@@ -36,7 +35,11 @@ namespace server.Acceptor
             msgEr.SetField(new OrdType(OrdType.MARKET));
             msgEr.SetField(new OrderQty(100));
             msgEr.SetField(new LastPx(150.25m));
-            session.Send(msgEr);
+
+            //var session = Session.LookupSession(sessionID);
+            //session.Send(msgEr);
+
+            Session.SendToTarget(msgEr, sessionID);
         }
 
         public void OnCreate(SessionID sessionID)
@@ -68,14 +71,14 @@ namespace server.Acceptor
             _logger.LogInformation($"{nameof(ToApp)} - {sessionID} - {message}");
             //throw new NotImplementedException();
 
-            try
-            {
-                Session.SendToTarget(message, sessionID);
-            }
-            catch (SessionNotFound ex)
-            {
-                _logger.LogError("Session not found: " + ex.Message);
-            }
+            //try
+            //{
+            //    Session.SendToTarget(message, sessionID);
+            //}
+            //catch (SessionNotFound ex)
+            //{
+            //    _logger.LogError("Session not found: " + ex.Message);
+            //}
         }
     }
 }
