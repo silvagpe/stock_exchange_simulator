@@ -16,7 +16,7 @@ namespace server.Acceptor
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Starting Fix Client");
+            _logger.LogInformation("[Acceptor] Starting Fix Server");
 
 
             SessionSettings settings = new SessionSettings(@"acceptor.cfg");
@@ -30,12 +30,14 @@ namespace server.Acceptor
                 logFactory);
 
             acceptor.Start();
-            while (!stoppingToken.IsCancellationRequested)
+            stoppingToken.Register(() =>
             {
-                //_logger.LogInformation("o hai");
-                Thread.Sleep(1000);
-            }
-            acceptor.Stop();
+                _logger.LogInformation("[Acceptor] Stopping Fix Server");
+                acceptor.Stop();
+                _logger.LogInformation("[Acceptor] Stopped Fix Server");
+            });
+            
+            _logger.LogInformation("[Acceptor] Started Fix Server");
 
             return Task.CompletedTask;
         }

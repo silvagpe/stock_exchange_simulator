@@ -16,7 +16,7 @@ namespace client.Initiator
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Starting Fix Server");
+            _logger.LogInformation("Starting Fix Client");
 
 
             SessionSettings settings = new SessionSettings(@"initiator.cfg");
@@ -30,19 +30,15 @@ namespace client.Initiator
                 logFactory);
 
             initiator.Start();
-
-            int a = 0;
-            while (!stoppingToken.IsCancellationRequested)
+            stoppingToken.Register(() =>
             {
-                if (a == 0)
-                {
-                    ((ITest)_appFixClient).TestConnection();
-                    a++;
-                }
-                //_logger.LogInformation("o hai");
-                Thread.Sleep(1000);
-            }
-            initiator.Stop();
+                _logger.LogInformation("Stopping Fix Client");
+                initiator.Stop();
+                _logger.LogInformation("Stopped Fix Client");
+            });
+            _logger.LogInformation("Started Fix Client");
+
+            
 
             return Task.CompletedTask;
         }
