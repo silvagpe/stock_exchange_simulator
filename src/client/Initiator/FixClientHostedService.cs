@@ -3,12 +3,14 @@ using QuickFix.Transport;
 
 namespace client.Initiator
 {
-    public class FixClient : BackgroundService
+    public class FixClientHostedService : BackgroundService
     {
-        private readonly ILogger<FixClient> _logger;
+        private const string FIX_CLIENT_NAME = "Fix Client";
+        private const string INITIATOR_CONFIG = "initiator.cfg";
+        private readonly ILogger<FixClientHostedService> _logger;
         private readonly IApplication _appFixClient;
 
-        public FixClient(ILogger<FixClient> logger, IApplication appFixServer)
+        public FixClientHostedService(ILogger<FixClientHostedService> logger, IApplication appFixServer)
         {
             _logger = logger;
             _appFixClient = appFixServer;
@@ -16,10 +18,9 @@ namespace client.Initiator
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Starting Fix Client");
+            _logger.LogInformation($"Starting {FIX_CLIENT_NAME}");
 
-
-            SessionSettings settings = new SessionSettings(@"initiator.cfg");
+            SessionSettings settings = new SessionSettings(INITIATOR_CONFIG);
 
             IMessageStoreFactory storeFactory = new FileStoreFactory(settings);
             ILogFactory logFactory = new FileLogFactory(settings);
@@ -32,13 +33,11 @@ namespace client.Initiator
             initiator.Start();
             stoppingToken.Register(() =>
             {
-                _logger.LogInformation("Stopping Fix Client");
+                _logger.LogInformation($"Stopping {FIX_CLIENT_NAME}");
                 initiator.Stop();
-                _logger.LogInformation("Stopped Fix Client");
+                _logger.LogInformation($"Stopped {FIX_CLIENT_NAME}");
             });
-            _logger.LogInformation("Started Fix Client");
-
-            
+            _logger.LogInformation($"Started {FIX_CLIENT_NAME}");
 
             return Task.CompletedTask;
         }

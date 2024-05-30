@@ -3,18 +3,40 @@ using QuickFix.Fields;
 
 namespace client.Initiator
 {
-    public class FixClientApp : IApplication, ITest
+    public class FixClientApp : IApplication, IFixApplicationFacede
     {
         private readonly ILogger<FixClientApp> _logger;
 
-        Session _session = null;
+        private Session _session = null;
+
+        public Session Session { get => _session; }
 
         public FixClientApp(ILogger<FixClientApp> logger)
         {
             _logger = logger;
         }
 
-        public void TestConnection()
+        public bool SessionIsLoggedOn()
+        {
+            return _session.IsLoggedOn;
+        }
+        public bool SendFixMessage(Message message)
+        {
+            ArgumentNullException.ThrowIfNull(_session, $"Session is null {nameof(_session)}");
+            ArgumentNullException.ThrowIfNull(message, $"Message is null {nameof(message)}");
+
+            try
+            {
+                return _session.Send(message);
+            }
+            catch (SessionNotFound ex)
+            {
+                _logger.LogError("Session not found: " + ex.Message);
+                return false;
+            }
+        }
+
+        public bool TestConnection()
         {
             Message newOrder = new Message();
             newOrder.Header.SetField(new MsgType("D"));
@@ -29,19 +51,21 @@ namespace client.Initiator
 
             try
             {
-                _session.Send(newOrder);
+                return _session.Send(newOrder);
             }
             catch (SessionNotFound ex)
             {
-                Console.WriteLine("Session not found: " + ex.Message);
+                _logger.LogError("Session not found: " + ex.Message);
+                return false;
             }
         }
 
         public void FromAdmin(Message message, SessionID sessionID)
         {
 
-            var msgType = message.Header.GetField(Tags.MsgType);            
-            if (msgType == "A"){
+            var msgType = message.Header.GetField(Tags.MsgType);
+            if (msgType == "0")
+            {
                 return;
             }
 
@@ -59,7 +83,7 @@ namespace client.Initiator
 
         public void OnCreate(SessionID sessionID)
         {
-            _logger.LogInformation($"{nameof(OnCreate)} - {sessionID}");            
+            _logger.LogInformation($"{nameof(OnCreate)} - {sessionID}");
             _session = Session.LookupSession(sessionID);
             //throw new NotImplementedException();
         }

@@ -1,5 +1,4 @@
 using client.Initiator;
-using QuickFix;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IApplication, FixClientApp>();
-builder.Services.AddHostedService<FixClient>();
+builder.Services.ConfigureInitiator();
 
 var app = builder.Build();
 
