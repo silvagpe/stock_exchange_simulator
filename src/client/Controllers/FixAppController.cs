@@ -1,9 +1,8 @@
+using client.Controllers.Inputs;
 using client.Initiator;
 using Microsoft.AspNetCore.Mvc;
 using QuickFix;
 using QuickFix.Fields;
-using Common.Entities;
-using client.Controllers.Inputs;
 
 namespace client.Controllers
 {
@@ -13,14 +12,12 @@ namespace client.Controllers
     {
 
         private readonly ILogger<FixAppController> _logger;
-        private readonly IApplication _application;
         private readonly IFixApplicationFacede _fixApplicationFacede;
 
-        public FixAppController(ILogger<FixAppController> logger, IApplication application)
+        public FixAppController(ILogger<FixAppController> logger, IFixApplicationFacede fixApplicationFacede)
         {
             _logger = logger;
-            _application = application;
-            _fixApplicationFacede = (IFixApplicationFacede)application;
+            _fixApplicationFacede = fixApplicationFacede;
         }
 
         [HttpGet]
@@ -36,7 +33,7 @@ namespace client.Controllers
         {
             Message newOrder = new Message();
             newOrder.Header.SetField(new QuickFix.Fields.MsgType("D"));
-            newOrder.SetField(new ClOrdID(input.ClOrdId));            
+            newOrder.SetField(new ClOrdID(input.ClOrdId));
             newOrder.SetField(new Symbol(input.Symbol));
             newOrder.SetField(new QuickFix.Fields.Side(input.Side));
             newOrder.SetField(new TransactTime(DateTime.UtcNow));

@@ -8,6 +8,7 @@ namespace client.Initiator
         {
             services.AddSingleton<IApplication, FixClientApp>();
             services.AddHostedService<FixClientHostedService>();
+            services.AddSingleton<IFixApplicationFacede, FixApplicationFacede>();
         }
     }
 }
