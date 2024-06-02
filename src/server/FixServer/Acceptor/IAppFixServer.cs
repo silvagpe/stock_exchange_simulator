@@ -1,6 +1,6 @@
 ﻿using QuickFix;
 
-namespace server.Acceptor
+namespace server.FixServer.Acceptor
 {
     public interface IAppFixServer
     {

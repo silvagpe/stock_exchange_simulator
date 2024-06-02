@@ -1,4 +1,5 @@
-using server.Acceptor;
+using server.FixServer.DependencyInjection;
+using server.MatchEngine.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.ConfigureAcceptor();
+builder.Services.ConfigureMatchEngine();
 
 var app = builder.Build();
 
