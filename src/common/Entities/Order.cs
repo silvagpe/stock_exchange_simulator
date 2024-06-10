@@ -15,5 +15,6 @@
         public Side Side { get; set; }
         public OrdType OrdType { get; set; }
         public OrdStatus OrdStatus { get; set; }
+        public string SessionId { get; set; }
     }
 }
