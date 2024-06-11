@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 
 namespace server.MatchEngine
 {
-    public class OrderBookService
+    public class OrderBookService : IOrderBookService
     {
         private ILogger<OrderBookService> _logger;
 
@@ -23,6 +23,18 @@ namespace server.MatchEngine
         private ConcurrentDictionary<string, decimal> sellOrdersMinPrice = new ConcurrentDictionary<string, decimal>();
         private ConcurrentDictionary<string, decimal> sellOrdersMaxPrice = new ConcurrentDictionary<string, decimal>();
 
+        public ConcurrentDictionary<decimal, ConcurrentQueue<Order>>? GetOrdersBySymbol(Side side, string symbol)
+        {
+
+            return side switch
+            {
+                Side.BUY =>
+                    buyOrders.TryGetValue(symbol, out ConcurrentDictionary<decimal, ConcurrentQueue<Order>>? orderByPrice) ? orderByPrice : null,
+                _ => sellOrders.TryGetValue(symbol, out ConcurrentDictionary<decimal, ConcurrentQueue<Order>>? orderByPrice) ? orderByPrice : null,
+            };
+
+        }
+
         public void AddOrder(Order order)
         {
             if (order == null)
@@ -34,7 +46,7 @@ namespace server.MatchEngine
             if (ProcessOrder(order))
             {
                 return;
-            };
+            }
 
             AddToBookBuyerOder(order);
             AddToBookSellOder(order);
@@ -104,9 +116,15 @@ namespace server.MatchEngine
         {
             bool result;
             if (order.Side == Side.BUY)
+            {
+                if (sellOrders.Count == 0) { return false; }
                 result = ProcessBuyOrders(order);
+            }
             else
+            {
+                if (buyOrders.Count == 0) { return false; }
                 result = ProcessSellOrders(order);
+            }
 
             return result;
         }
