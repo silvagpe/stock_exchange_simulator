@@ -35,11 +35,18 @@ namespace client.Controllers
             newOrder.Header.SetField(new QuickFix.Fields.MsgType("D"));
             newOrder.SetField(new ClOrdID(input.ClOrdId));
             newOrder.SetField(new Symbol(input.Symbol));
-            newOrder.SetField(new QuickFix.Fields.Side(input.Side));
+            if (input.Side.HasValue)
+                newOrder.SetField(new QuickFix.Fields.Side(input.Side.Value));
+
             newOrder.SetField(new TransactTime(DateTime.UtcNow));
-            newOrder.SetField(new QuickFix.Fields.OrdType(input.OrdType));
-            newOrder.SetField(new OrderQty(input.Quantity));
-            newOrder.SetField(new Price(input.Price));
+            if (input.OrdType.HasValue)
+                newOrder.SetField(new QuickFix.Fields.OrdType(input.OrdType.Value));
+
+            if (input.Quantity.HasValue)
+                newOrder.SetField(new OrderQty(input.Quantity.Value));
+            
+            if (input.Price.HasValue)
+                newOrder.SetField(new Price(input.Price.Value));
 
             return _fixApplicationFacede.SendFixMessage(newOrder);
         }

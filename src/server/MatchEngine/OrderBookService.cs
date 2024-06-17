@@ -59,9 +59,9 @@ namespace server.MatchEngine
             SaveMinValue(buyOrdersMinPrice, order);
             SaveMaxValue(buyOrdersMaxPrice, order);
 
-            if (buyOrders.TryGetValue(order.Symbol, out var ordersByPrice))
+            if (buyOrders.TryGetValue(order.Symbol, out var dicOrdersByPrice))
             {
-                if (ordersByPrice.TryGetValue(order.Price, out var orders))
+                if (dicOrdersByPrice.TryGetValue(order.Price, out var orders))
                 {
                     orders.Enqueue(order);
                 }
@@ -69,16 +69,16 @@ namespace server.MatchEngine
                 {
                     orders = new ConcurrentQueue<Order>();
                     orders.Enqueue(order);
-                    ordersByPrice.TryAdd(order.Price, orders);
+                    dicOrdersByPrice.TryAdd(order.Price, orders);
                 }
             }
             else
             {
-                var orders = new ConcurrentQueue<Order>();
-                orders.Enqueue(order);
-                ordersByPrice = new ConcurrentDictionary<decimal, ConcurrentQueue<Order>>();
-                ordersByPrice.TryAdd(order.Price, orders);
-                buyOrders.TryAdd(order.Symbol, ordersByPrice);
+                var queueOrders = new ConcurrentQueue<Order>();
+                queueOrders.Enqueue(order);
+                dicOrdersByPrice = new ConcurrentDictionary<decimal, ConcurrentQueue<Order>>();
+                dicOrdersByPrice.TryAdd(order.Price, queueOrders);
+                buyOrders.TryAdd(order.Symbol, dicOrdersByPrice);
             }
         }
 

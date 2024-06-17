@@ -7,7 +7,7 @@ namespace client.Initiator
     {
         private readonly ILogger<FixClientApp> _logger;
 
-        private Session _session = null;
+        private Session _session;
 
         public Session Session { get => _session; }
 

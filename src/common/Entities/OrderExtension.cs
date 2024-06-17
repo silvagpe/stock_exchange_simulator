@@ -16,8 +16,8 @@ namespace Common.Entities
                 OrdType.MARKET => QuickFix.Fields.OrdType.MARKET,
                 OrdType.LIMIT => QuickFix.Fields.OrdType.LIMIT,
                 OrdType.STOP_LOSS => QuickFix.Fields.OrdType.STOP,
-                OrdType.STOP_LIMIT => QuickFix.Fields.OrdType.STOP_LIMIT
-                // _ => QuickFix.Fields.OrdType.
+                OrdType.STOP_LIMIT => QuickFix.Fields.OrdType.STOP_LIMIT,
+                 _ => QuickFix.Fields.OrdType.LIMIT
             };
         }
     }

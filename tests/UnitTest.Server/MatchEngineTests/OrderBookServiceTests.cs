@@ -56,9 +56,8 @@ public class OrderBookServiceTests
         var result = orderByPrice
             .Select(x => x.Value.Where(v => v.OrderId == sellOrder.OrderId))
             .Select(x => x.FirstOrDefault(x => x.OrderId == sellOrder.OrderId))
-            .FirstOrDefault(x => x.OrderId == sellOrder.OrderId);
+            .FirstOrDefault(x => x?.OrderId == sellOrder.OrderId);
 
-        Assert.Equal(sellOrder.OrderId, result.OrderId);
-
+        Assert.Equal(sellOrder.OrderId, result?.OrderId);
     }
 }
