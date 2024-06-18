@@ -35,6 +35,18 @@ namespace server.MatchEngine
 
         }
 
+        public ConcurrentQueue<Order>? GetOrdersByPrice(Side side, string symbol, decimal price)
+        {
+
+            var orderBySymbol = GetOrdersBySymbol(side, symbol);
+            if (orderBySymbol is null) { return null; }
+
+            return orderBySymbol
+                .Where(x => x.Key == price)
+                .Select(x => x.Value)
+                .FirstOrDefault();
+        }
+
         public void AddOrder(Order order)
         {
             if (order == null)
