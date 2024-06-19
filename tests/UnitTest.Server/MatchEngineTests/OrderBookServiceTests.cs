@@ -8,11 +8,18 @@ namespace UnitTest.Server.MatchEngineTests;
 
 public class OrderBookServiceTests
 {
+    private readonly TestFixture _fixture;
+
+    public OrderBookServiceTests()
+    {
+        _fixture = new TestFixture();
+    }
+
+
     [Fact]
     public void ShouldAddOrderOnMemory()
-    {
-        var log = new Mock<ILogger<OrderBookService>>();
-        var bookService = new OrderBookService(log.Object);
+    {        
+        IOrderBookService bookService = _fixture.CreateInstance<OrderBookService>();
 
         string symbol = "PETR4";
 
