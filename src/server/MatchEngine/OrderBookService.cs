@@ -1,4 +1,5 @@
 ﻿using Common.Entities;
+using server.MatchEngine.ProcessOrders;
 using System.Collections.Concurrent;
 
 namespace server.MatchEngine
@@ -12,11 +13,9 @@ namespace server.MatchEngine
             _logger = logger;
         }
 
-        private ConcurrentDictionary<string, ConcurrentDictionary<decimal, ConcurrentQueue<Order>>> buyOrders =
-            new ConcurrentDictionary<string, ConcurrentDictionary<decimal, ConcurrentQueue<Order>>>();
+        private ConcurrentDictionary<string, ConcurrentDictionary<decimal, ConcurrentQueue<Order>>> buyOrders = new ConcurrentDictionary<string, ConcurrentDictionary<decimal, ConcurrentQueue<Order>>>();
         private ConcurrentDictionary<string, decimal> buyOrdersMinPrice = new ConcurrentDictionary<string, decimal>();
         private ConcurrentDictionary<string, decimal> buyOrdersMaxPrice = new ConcurrentDictionary<string, decimal>();
-
 
         private ConcurrentDictionary<string, ConcurrentDictionary<decimal, ConcurrentQueue<Order>>> sellOrders =
             new ConcurrentDictionary<string, ConcurrentDictionary<decimal, ConcurrentQueue<Order>>>();
@@ -25,26 +24,23 @@ namespace server.MatchEngine
 
         public ConcurrentDictionary<decimal, ConcurrentQueue<Order>>? GetOrdersBySymbol(Side side, string symbol)
         {
-
             return side switch
             {
                 Side.BUY =>
-                    buyOrders.TryGetValue(symbol, out ConcurrentDictionary<decimal, ConcurrentQueue<Order>>? orderByPrice) ? orderByPrice : null,
-                _ => sellOrders.TryGetValue(symbol, out ConcurrentDictionary<decimal, ConcurrentQueue<Order>>? orderByPrice) ? orderByPrice : null,
+                    buyOrders.GetOrdersBySymbol(symbol),
+                _ => sellOrders.GetOrdersBySymbol(symbol),
             };
-
         }
 
         public ConcurrentQueue<Order>? GetOrdersByPrice(Side side, string symbol, decimal price)
-        {
-
-            var orderBySymbol = GetOrdersBySymbol(side, symbol);
-            if (orderBySymbol is null) { return null; }
-
-            return orderBySymbol
-                .Where(x => x.Key == price)
-                .Select(x => x.Value)
-                .FirstOrDefault();
+        {            
+            var orderBySide =  side switch 
+            {
+                Side.BUY => buyOrders,
+                _ => sellOrders
+            };
+            
+            return orderBySide.GetOrdersByPrice(symbol, price);
         }
 
         public void AddOrder(Order order)
@@ -143,7 +139,9 @@ namespace server.MatchEngine
 
         private bool ProcessBuyOrders(Order order)
         {
+            if (order.Side != Side.BUY) return false;
 
+            // if ()
 
             return false;
         }
